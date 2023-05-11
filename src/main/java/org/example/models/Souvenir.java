@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Souvenir {
+public class Souvenir extends DefaultFields {
     short id;
     String name;
     String brand; //реквізити виробника
@@ -17,7 +17,7 @@ public class Souvenir {
     @Override
     public String toString(){
        return  String.format("%5s %-25.25s %-15.15s %s %.2f",
-        id, name, brand, dateIssue, price);
+        id, name, brand, dateIssue, (double) price /100);
 
     }
 }

@@ -1,15 +1,17 @@
 package org.example.dao;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import org.example.models.DefaultFields;
 
-public abstract class AbstractDAO<T extends DefaultFields> implements DAO{
+public abstract class AbstractDAO<T extends DefaultFields> implements DAO<T>{
   
-  private final List<T> models;
+  private final Collection<T> models;
 
-  public AbstractDAO(List<T> models) {
-    this.models = models;
+  public AbstractDAO() {
+    this.models = new HashSet<>();
   }
 
   @Override
@@ -22,42 +24,28 @@ public abstract class AbstractDAO<T extends DefaultFields> implements DAO{
     return List.copyOf(models);
   }
 
+
   @Override
-  public Optional save(Object model) {
-    return save(T model);
+  public Optional<T> save(T model) {
+    return addToCollections(model);
   }
 
   @Override
-  public Optional update(Object model) {
-    return Optional.empty();
+  public Optional<T> update(T model) {
+    return addToCollections(model);
   }
 
   @Override
-  public void delete(Object model) {
-
+  public void delete(T model) {
+    models.remove(model);
   }
 
 
-  private Optional<T> save(T model) {
+  private Optional<T>  addToCollections(T model){
     if (models.add(model)) {
       return Optional.of(model);
     }
     return Optional.empty();
   }
 
-
-  public Optional<T> update(T model) {
-    boolean b = models.removeIf(s -> s.getId() == model.getId());
-    if (b){
-      models.add(model);
-      return Optional.of(model);
-    }
-    return Optional.empty();
-  }
-
-
-  public void delete(T model) {
-    models.removeIf(s -> s.equals(model));
-  }
-  
 }

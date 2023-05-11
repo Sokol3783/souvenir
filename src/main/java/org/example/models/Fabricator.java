@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Fabricator implements DefaultFields {
+public class Fabricator extends DefaultFields {
   short id;
   String name;
   String country;
