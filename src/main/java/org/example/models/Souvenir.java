@@ -3,7 +3,9 @@ package org.example.models;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 public class Souvenir extends DefaultFields {

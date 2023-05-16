@@ -10,9 +10,12 @@ import java.util.Optional;
 import lombok.Data;
 
 
-public class Menu {
-    //Comparator.comparing(Item::getNumber)
+public class Menu {    
   SortedMenuList<Item> items;
+
+  public Menu(SortedMenuList<Item> items){
+    items = items;
+  }
 
   public void runMenu() {
     printMenu();
@@ -43,7 +46,7 @@ public class Menu {
     items.printMenu();
   }
 
-  private static class SortedMenuList<T extends Item> {
+  public static class SortedMenuList<T extends Item> {
 
     private final Comparator<T> comparator;
     private List<T> list;
@@ -51,6 +54,15 @@ public class Menu {
     public SortedMenuList(Comparator<T> comparator) {
       this.comparator = comparator;
       this.list = new ArrayList<>();
+    }
+
+    public SortedMenuList() {
+      this.comparator = (Comparator<T>) defaultComparator();
+      this.list = new ArrayList<>();
+    }
+
+    public static Comparator<Item> defaultComparator(){
+      return Comparator.comparing(Item::getNumber);
     }
 
     public int size() {
@@ -75,11 +87,10 @@ public class Menu {
 
     private void sortAndDistinct() {
       int[] n = {1};
-      list = list.stream().distinct().sorted(comparator).map(s -> {
+      list = list.stream().distinct().sorted(comparator).peek(s -> {
         int i = n[0];
         s.setNumber(i++);
-        n[0] = n[0];
-        return s;
+        n[0] = i;
       }).toList();
 
     }
@@ -89,7 +100,7 @@ public class Menu {
     }
 
     public void printMenu() {
-      list.stream().forEach(s-> System.out.println(s));
+      list.forEach(System.out::println);
     }
 
     public Optional<T> findByNumber(int command) {
