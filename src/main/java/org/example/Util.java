@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.models.Fabricator;
+import org.example.models.Souvenir;
 
 public class Util {
 
@@ -9,7 +10,11 @@ public class Util {
     return  null;
   }
 
-  public static String enterValue() {
+  public static String enterValue(String year) {
+    return null;
+  }
+
+  public static Souvenir enterSouvenir() {
     return null;
   }
 }
