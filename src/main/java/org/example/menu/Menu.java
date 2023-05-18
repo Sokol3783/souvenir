@@ -7,14 +7,15 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 
 public class Menu {    
-  SortedMenuList<Item> items;
+  private final SortedMenuList<Item> items;
 
   public Menu(SortedMenuList<Item> items){
-    items = items;
+    this.items = items;
   }
 
   public void runMenu() {
@@ -109,6 +110,7 @@ public class Menu {
   }
 
   @Data
+  @AllArgsConstructor
   public static class Item {
 
     private int number;

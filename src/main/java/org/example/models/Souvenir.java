@@ -18,8 +18,8 @@ public class Souvenir extends DefaultFields {
 
     @Override
     public String toString(){
-       return  String.format("%5s %-25.25s %-15.15s %s %.2f",
-        id, name, brand, dateIssue, (double) price /100);
+       return  String.format("%5s %-25.25s %-15.15s %25s %15s %.2f",
+        id, name, brand, owner.getName(), dateIssue, (double) price /100);
 
     }
 }
