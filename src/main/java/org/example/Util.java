@@ -1,5 +1,7 @@
 package org.example;
 
+import static org.example.App.IN;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.FileNotFoundException;
@@ -7,34 +9,59 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import lombok.SneakyThrows;
 import org.example.dao.DAO;
 import org.example.dao.FabricatorDAO;
 import org.example.dao.SouvenirDAO;
 import org.example.models.Fabricator;
 import org.example.models.Souvenir;
+import org.jetbrains.annotations.NotNull;
+
+
 
 public class Util {
 
-  public static Fabricator enterFabricator() {
+  @NotNull
+  public static String enterStringValue(String nameValue) {
+    printLine(nameValue);
+    while (IN.hasNext()){
 
-    return  null;
-  }
+      if (IN.hasNextLine()){
+        String value = IN.nextLine();
+        if (!value.isEmpty()){
+          return value;
+        }
+      }
 
-  public static String enterValue(String year) {
-    return null;
-  }
-
-  public static Souvenir enterSouvenir() {
-    return null;
-  }
-
-
-  public static void restoreData() {
-    try {
-      restoreFabricator();
-      restoreSouvenirs();
-    } catch (FileNotFoundException e) {
+      printMessageAndLine(nameValue, "Invalid input, please repeat");
     }
+    return "";
+  }
+
+  public static int enterIntValue(String nameValue) {
+    printLine(nameValue);
+    while (IN.hasNext()){
+      if (IN.hasNextInt()){
+        return IN.nextInt();
+      }
+      printMessageAndLine(nameValue, "Invalid input, please repeat");
+    }
+    return 0;
+  }
+
+  private static void printLine(String nameValue) {
+    System.out.println("Enter the " + nameValue + ":");
+  }
+
+  private static void printMessageAndLine(String nameValue, String message) {
+    System.out.println(message);
+    printLine(nameValue);
+  }
+
+  @SneakyThrows
+public static void restoreData() {
+    restoreFabricator();
+    restoreSouvenirs();
   }
 
   private static void restoreSouvenirs() throws FileNotFoundException {
@@ -59,7 +86,7 @@ public class Util {
     try {
       saveSouvenirs();
     } catch (IOException e) {
-      System.out.println("Souvenris hasn't been saved");
+      System.out.println("Souvenirs hasn't been saved");
     }
 
     try {
