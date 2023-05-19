@@ -15,7 +15,7 @@ public abstract class AbstractDAO<T extends DefaultFields> implements DAO<T>{
   }
 
   @Override
-  public Optional<T> get(Short id) {
+  public Optional<T> get(Integer id) {
     return models.stream().filter(s -> s.getId() == id).findFirst();
   }
 

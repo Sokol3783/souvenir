@@ -1,8 +1,11 @@
 package org.example.menu;
 
+import static org.example.App.IN;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.example.Util;
 import org.example.dao.DAO;
@@ -16,23 +19,59 @@ import org.example.models.Souvenir;
 
 public abstract class AbstractMenuCreator {
 
-  DAO<Souvenir> souvenirDAO = SouvenirDAO.getInstance();
-  DAO<Fabricator> fabricatorDAO = FabricatorDAO.getInstance();
-
-  /**
-   * Create default menu of inner classes
-   */
-  public abstract Menu getMenu();
+  private final static DAO<Souvenir> souvenirDAO = SouvenirDAO.getInstance();
+  private final static DAO<Fabricator> fabricatorDAO = FabricatorDAO.getInstance();
 
   //TODO
   private static Fabricator chooseFabricator() {
+    System.out.println("""
+        1. Find by name.
+        2. Find by id.
+        Enter value number: 
+        """);
+    while (IN.hasNextLine()) {
+      if (IN.hasNextInt())
+        switch (IN.nextInt()) {
+          case 1 -> {
+            return findFabricatorByName();
+          }
+          case 2 -> {
+            return findFabricatorById();
+          }
+          default -> System.out.println("Invalid input, enter '1' or '2'");
+        }
+    }
     return null;
+  }
+
+  private static Fabricator findFabricatorById() {
+    Optional<Fabricator> first = Optional.empty();
+    while (first.isEmpty()) {
+      first = fabricatorDAO.get(Util.enterIntValue("id"));
+    }
+    return first.get();
+  }
+
+  private static Fabricator findFabricatorByName() {
+    Optional<Fabricator> first = Optional.empty();
+    while (first.isEmpty()) {
+      String name = Util.enterStringValue("fabricator's name");
+      first = fabricatorDAO.getAll().stream()
+          .filter(s -> s.getName().compareToIgnoreCase(name) == 0)
+          .findFirst();
+    }
+    return first.get();
   }
 
   //TODO
   private static Souvenir chooseSouvenir() {
     return null;
   }
+
+  /**
+   * Create default menu of inner classes
+   */
+  public abstract Menu getMenu();
 
   public static class MainMenuCreator extends AbstractMenuCreator {
 
@@ -148,8 +187,7 @@ public abstract class AbstractMenuCreator {
     @Override
     public Menu getMenu() {
       SortedMenu<Item> items = new SortedMenu<>();
-      items.add(new Item(1, "add", () ->
-          souvenirDAO.create()));
+      items.add(new Item(1, "add", souvenirDAO::create));
       items.add(new Item(2, "change", () ->
           souvenirDAO.update(chooseSouvenir())));
       items.add(new Item(3, "list all", () ->
@@ -163,8 +201,7 @@ public abstract class AbstractMenuCreator {
     @Override
     public Menu getMenu() {
       SortedMenu<Item> items = new SortedMenu<>();
-      items.add(new Item(1, "add", () ->
-          fabricatorDAO.create()));
+      items.add(new Item(1, "add", fabricatorDAO::create));
       items.add(new Item(2, "change", () ->
           fabricatorDAO.update(chooseFabricator())));
       items.add(new Item(3, "list all", () ->
