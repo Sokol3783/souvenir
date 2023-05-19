@@ -26,9 +26,7 @@ public abstract class AbstractDAO<T extends DefaultFields> implements DAO<T>{
 
 
   @Override
-  public Optional<T> save(T model) {
-    return addToCollections(model);
-  }
+  public abstract Optional<T> create();
 
   @Override
   public Optional<T> update(T model) {

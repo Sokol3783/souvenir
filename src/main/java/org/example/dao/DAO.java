@@ -9,7 +9,7 @@ public interface DAO<T> {
   
   List<T> getAll();
   
- Optional<T> save(T model);
+ Optional<T> create();
   
  Optional<T> update(T model);
     

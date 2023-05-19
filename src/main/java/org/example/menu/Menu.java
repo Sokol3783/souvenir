@@ -12,9 +12,9 @@ import lombok.Data;
 
 
 public class Menu {    
-  private final SortedMenuList<Item> items;
+  private final SortedMenu<Item> items;
 
-  public Menu(SortedMenuList<Item> items){
+  public Menu(SortedMenu<Item> items){
     this.items = items;
   }
 
@@ -47,17 +47,17 @@ public class Menu {
     items.printMenu();
   }
 
-  public static class SortedMenuList<T extends Item> {
+  public static class SortedMenu<T extends Item> {
 
     private final Comparator<T> comparator;
     private List<T> list;
 
-    public SortedMenuList(Comparator<T> comparator) {
+    public SortedMenu(Comparator<T> comparator) {
       this.comparator = comparator;
       this.list = new ArrayList<>();
     }
 
-    public SortedMenuList() {
+    public SortedMenu() {
       this.comparator = (Comparator<T>) defaultComparator();
       this.list = new ArrayList<>();
     }

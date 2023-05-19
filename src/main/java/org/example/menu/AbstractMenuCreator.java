@@ -1,30 +1,44 @@
 package org.example.menu;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.example.Util;
 import org.example.dao.DAO;
 import org.example.dao.FabricatorDAO;
 import org.example.dao.SouvenirDAO;
 import org.example.menu.Menu.Item;
-import org.example.menu.Menu.SortedMenuList;
+import org.example.menu.Menu.SortedMenu;
 import org.example.models.Fabricator;
 import org.example.models.Souvenir;
 
 
 public abstract class AbstractMenuCreator {
 
+  DAO<Souvenir> souvenirDAO = SouvenirDAO.getInstance();
+  DAO<Fabricator> fabricatorDAO = FabricatorDAO.getInstance();
+
   /**
    * Create default menu of inner classes
    */
   public abstract Menu getMenu();
 
-  public static class MainMenuCreator extends AbstractMenuCreator {
+  //TODO
+  private Fabricator chooseFabricator() {
+    return null;
+  }
 
-    DAO<Souvenir> souvenirDAO = SouvenirDAO.getInstance();
-    DAO<Fabricator> fabricatorDAO = FabricatorDAO.getInstance();
+  //TODO
+  private Souvenir chooseSouvenir() {
+    return null;
+  }
+
+  public static class MainMenuCreator extends AbstractMenuCreator {
 
     @Override
     public Menu getMenu() {
-      SortedMenuList<Item> items = new SortedMenuList<>();
+      SortedMenu<Item> items = new SortedMenu<>();
       //Додавати, редагувати, переглядати всіх виробників
       items.add(fabricatorMenu());
       //Додавати, редагувати, переглядати всіх сувеніри.
@@ -34,7 +48,7 @@ public abstract class AbstractMenuCreator {
       //Вивести інформацію про сувеніри, виготовлені в заданій країні.
       items.add(listSouvenirsFromCountry());
       //Вивести інформацію про виробників, чиї ціни на сувеніри менше заданої.
-      items.add(listFabricatorsLessThenInputPrice());
+      items.add(listFabricatorsHasPriceLessThenInputPrice());
       //Вивести інформацію по всіх виробниках та, для кожного виробника вивести інформацію про всі сувеніри, які він виробляє.
       items.add(listFabricatorsAndListFabricatorsSouvenirs());
       //Вивести інформацію про виробників заданого сувеніру, виробленого у заданому року.
@@ -76,35 +90,95 @@ public abstract class AbstractMenuCreator {
     }
 
     private Item listFabricatorsAndListFabricatorsSouvenirs() {
-      Item item = null;
-      return item;
+      return new Item(6, "List all fabricators and their souvenirs", () -> {
+        Map<Fabricator, List<Souvenir>> collect = souvenirDAO.getAll().stream()
+            .collect(Collectors.groupingBy(Souvenir::getOwner));
+        collect.entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().getName()))
+            .forEach(e -> {
+              System.out.println(" - " + e.getKey());
+              e.getValue().stream()
+                  .sorted(Comparator.comparing(Souvenir::getBrand).thenComparing(Souvenir::getName))
+                  .forEach(s -> {
+                    System.out.println(" - " + s);
+                  });
+            });
+      });
     }
 
-    private Item listFabricatorsLessThenInputPrice() {
-      Item item = null;
-      return item;
+    private Item listFabricatorsHasPriceLessThenInputPrice() {
+      return new Item(5, "List all fabricators that has price less then $0", () -> {
+        int price = Integer.parseInt(Util.enterValue("price $"));
+        souvenirDAO.getAll().stream().filter(s -> s.getPrice() < price).
+            map(s -> s.getOwner()).distinct().sorted().forEach(
+                System.out::println);
+      });
     }
 
     private Item listSouvenirsFromCountry() {
-      Item item = null;
-      return item;
+      String country = Util.enterValue("country");
+      return new Item(4, "List souvenirs from country", () -> {
+        souvenirDAO.getAll().stream()
+            .filter(s -> s.getOwner().getCountry().compareToIgnoreCase(country) == 0).forEach(
+                System.out::println);
+      });
     }
 
     private Item listFabricatorsSouvenirsByInput() {
-      Item item = null;
+      Item item = new Item(3, "List fabricator souvenirs by $fabricator", () -> {
+        Fabricator fabricator = Util.enterFabricator();
+        souvenirDAO.getAll().stream().filter(s -> s.getOwner().equals(fabricator)).sorted().forEach(
+            System.out::println);
+      });
       return item;
     }
 
     private Item souvenirMenu() {
-      return null;
+      return new Item(2, "souvenir menu", new Runnable() {
+        @Override
+        public void run() {
+          Menu menu = new SouvenirMenuCreator().getMenu();
+        }
+      });
     }
 
     private Item fabricatorMenu() {
-      Item item = null;
-      return item;
+      return new Item(1, "fabricator menu", new Runnable() {
+        @Override
+        public void run() {
+          Menu menu = new FabricatorMenuCreator().getMenu();
+        }
+      });
     }
-
 
   }
 
+  public class SouvenirMenuCreator extends AbstractMenuCreator {
+
+    @Override
+    public Menu getMenu() {
+      SortedMenu items = new SortedMenu();
+      items.add(new Item(1, "add", () ->
+          souvenirDAO.create()));
+      items.add(new Item(2, "change", () ->
+          souvenirDAO.update(chooseSouvenir())));
+      items.add(new Item(3, "list all", () ->
+          souvenirDAO.getAll().forEach(System.out::println)));
+      return new Menu(items);
+    }
+  }
+
+  public class FabricatorMenuCreator extends AbstractMenuCreator {
+
+    @Override
+    public Menu getMenu() {
+      SortedMenu items = new SortedMenu();
+      items.add(new Item(1, "add", () ->
+          fabricatorDAO.create()));
+      items.add(new Item(2, "change", () ->
+          fabricatorDAO.update(chooseFabricator())));
+      items.add(new Item(3, "list all", () ->
+          fabricatorDAO.getAll().forEach(System.out::println)));
+      return new Menu(items);
+    }
+  }
 }

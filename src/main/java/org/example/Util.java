@@ -2,13 +2,11 @@ package org.example;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import lombok.SneakyThrows;
 import org.example.dao.DAO;
 import org.example.dao.FabricatorDAO;
 import org.example.dao.SouvenirDAO;
@@ -36,7 +34,6 @@ public class Util {
       restoreFabricator();
       restoreSouvenirs();
     } catch (FileNotFoundException e) {
-      return;
     }
   }
 
@@ -46,7 +43,7 @@ public class Util {
         App.path + Souvenir.class.getCanonicalName()
     ), new TypeToken<List<Souvenir>>(){}.getType());
     DAO<Souvenir> dao = SouvenirDAO.getInstance();
-    coll.forEach(dao::save);
+    coll.forEach(dao::update);
   }
 
   private static void restoreFabricator() throws FileNotFoundException {
@@ -55,7 +52,7 @@ public class Util {
         App.path + Fabricator.class.getCanonicalName()
     ), new TypeToken<List<Fabricator>>(){}.getType());
     DAO<Fabricator> dao = FabricatorDAO.getInstance();
-    coll.forEach(dao::save);
+    coll.forEach(dao::update);
   }
 
   public static void saveData() {
