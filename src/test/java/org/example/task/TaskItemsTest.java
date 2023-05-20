@@ -1,5 +1,10 @@
 package org.example.task;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.time.LocalDate;
 import java.util.List;
 import org.example.dao.DAO;
@@ -16,6 +21,8 @@ class TaskItemsTest {
   private static final DAO<Souvenir> souvenirDAO = SouvenirDAO.getInstance();
   private static final DAO<Fabricator> fabricatorDAO = FabricatorDAO.getInstance();
 
+  private static final TaskItems task = new TaskItemImpl(souvenirDAO, fabricatorDAO);
+
   @BeforeEach
   void setUp() {
     List<Fabricator> fabricators = getFabricators();
@@ -25,7 +32,7 @@ class TaskItemsTest {
     souvenirs.forEach(souvenirDAO::update);
   }
 
-  private List<Souvenir> getSouvenirs() {
+  private static List<Souvenir> getSouvenirs() {
     return List.of(
         new Souvenir(1, "LEGO Classic Bricks Box", "LEGO", LocalDate.parse("2022-01-15"), 29.99,
             fabricatorDAO.get(1).get()),
@@ -69,10 +76,9 @@ class TaskItemsTest {
             LocalDate.parse("2018-07-15"), 9.99, fabricatorDAO.get(1).get()),
         new Souvenir(21, "Hot Wheels Track Builder Unlimited Loop Kit", "Hot Wheels",
             LocalDate.parse("2022-05-01"), 29.99, fabricatorDAO.get(3).get()));
-
   }
 
-  private List<Fabricator> getFabricators() {
+  private static List<Fabricator> getFabricators() {
     return List.of(new Fabricator(1, "LEGO", "DENMARK"),
         new Fabricator(2, "HASBRO", "USA"),
         new Fabricator(3, "Mattel", "USA"),
@@ -87,10 +93,35 @@ class TaskItemsTest {
 
   @Test
   void listFabricatorsSouvenirsByInputTest() {
+    String input = "1\nLego\n";
+    InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+
+    // Создание объекта для перехвата вывода в консоль
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    PrintStream printStream = new PrintStream(outputStream);
+
+    // Сохранение стандартных потоков ввода-вывода
+    InputStream originalInputStream = System.in;
+    PrintStream originalPrintStream = System.out;
+
+    // Перенаправление потоков ввода-вывода
+    System.setIn(inputStream);
+    System.setOut(printStream);
+
+    task.listFabricatorsSouvenirsByInput().run();
+
+    System.setIn(originalInputStream);
+    System.setOut(originalPrintStream);
+
+    String output = outputStream.toString().trim();
+
+
   }
 
   @Test
   void listSouvenirsFromCountryTest() {
+
+
   }
 
   @Test

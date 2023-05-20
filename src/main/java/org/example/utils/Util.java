@@ -42,7 +42,7 @@ public class Util {
     printLine(nameValue);
     while (IN.hasNext()) {
       if (IN.hasNextInt()) {
-        return IN.nextInt();
+        return Integer.parseInt(IN.nextLine());
       }
       printMessageAndLine(nameValue, "Invalid input, please repeat");
     }
@@ -121,47 +121,7 @@ public class Util {
 
   //TODO
   public static Fabricator chooseFabricator() {
-    System.out.println("""
-        1. Find by name.
-        2. Find by id.
-        Enter value number: 
-        """);
-    while (IN.hasNextLine()) {
-      if (IN.hasNextInt()) {
-        switch (IN.nextInt()) {
-          case 1 -> {
-            return findFabricatorByName();
-          }
-          case 2 -> {
-            return findFabricatorById();
-          }
-          default -> System.out.println("Invalid input, enter '1' or '2'");
-        }
-      }
-    }
-    return null;
-  }
-
-  public static Fabricator findFabricatorById() {
-    Optional<Fabricator> first = Optional.empty();
-    while (first.isEmpty()) {
-      //TODO
-      //first = fabricatorDAO.get(Util.enterIntValue("id"));
-    }
-    return first.get();
-  }
-
-  private static Fabricator findFabricatorByName() {
-    Optional<Fabricator> first = Optional.empty();
-    while (first.isEmpty()) {
-      String name = Util.enterStringValue("fabricator's name");
-      /*TODO
-      first = fabricatorDAO.getAll().stream()
-          .filter(s -> s.getName().compareToIgnoreCase(name) == 0).findFirst();
-
-       */
-    }
-    return first.get();
+    throw  new UnsupportedOperationException();
   }
 
   //TODO
