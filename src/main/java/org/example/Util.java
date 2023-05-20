@@ -9,7 +9,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import lombok.SneakyThrows;
 import org.example.dao.DAO;
 import org.example.dao.FabricatorDAO;
 import org.example.dao.SouvenirDAO;
@@ -18,17 +17,16 @@ import org.example.models.Souvenir;
 import org.jetbrains.annotations.NotNull;
 
 
-
 public class Util {
 
   @NotNull
   public static String enterStringValue(String nameValue) {
     printLine(nameValue);
-    while (IN.hasNext()){
+    while (IN.hasNext()) {
 
-      if (IN.hasNextLine()){
+      if (IN.hasNextLine()) {
         String value = IN.nextLine();
-        if (!value.isEmpty()){
+        if (!value.isEmpty()) {
           return value;
         }
       }
@@ -40,8 +38,8 @@ public class Util {
 
   public static int enterIntValue(String nameValue) {
     printLine(nameValue);
-    while (IN.hasNext()){
-      if (IN.hasNextInt()){
+    while (IN.hasNext()) {
+      if (IN.hasNextInt()) {
         return IN.nextInt();
       }
       printMessageAndLine(nameValue, "Invalid input, please repeat");
@@ -58,17 +56,21 @@ public class Util {
     printLine(nameValue);
   }
 
-  @SneakyThrows
-public static void restoreData() {
-    restoreFabricator();
-    restoreSouvenirs();
+
+  public static void restoreData() {
+    try {
+      restoreFabricator();
+      restoreSouvenirs();
+    } catch (FileNotFoundException e) {
+    }
   }
 
   private static void restoreSouvenirs() throws FileNotFoundException {
     Gson gson = new Gson();
     List<Souvenir> coll = gson.fromJson(new FileReader(
         App.path + Souvenir.class.getCanonicalName()
-    ), new TypeToken<List<Souvenir>>(){}.getType());
+    ), new TypeToken<List<Souvenir>>() {
+    }.getType());
     DAO<Souvenir> dao = SouvenirDAO.getInstance();
     coll.forEach(dao::update);
   }
@@ -77,7 +79,8 @@ public static void restoreData() {
     Gson gson = new Gson();
     List<Fabricator> coll = gson.fromJson(new FileReader(
         App.path + Fabricator.class.getCanonicalName()
-    ), new TypeToken<List<Fabricator>>(){}.getType());
+    ), new TypeToken<List<Fabricator>>() {
+    }.getType());
     DAO<Fabricator> dao = FabricatorDAO.getInstance();
     coll.forEach(dao::update);
   }
@@ -100,7 +103,7 @@ public static void restoreData() {
     Gson gson = new Gson();
     List all = SouvenirDAO.getInstance().getAll();
     String serialized = gson.toJson(all);
-    try(FileWriter writer = new FileWriter(App.path + Souvenir.class.getCanonicalName())){
+    try (FileWriter writer = new FileWriter(App.path + Souvenir.class.getCanonicalName())) {
       writer.write(serialized);
     }
   }
@@ -109,7 +112,7 @@ public static void restoreData() {
     Gson gson = new Gson();
     List all = FabricatorDAO.getInstance().getAll();
     String serialized = gson.toJson(all);
-    try(FileWriter writer = new FileWriter(App.path + Fabricator.class.getCanonicalName())){
+    try (FileWriter writer = new FileWriter(App.path + Fabricator.class.getCanonicalName())) {
       writer.write(serialized);
     }
   }

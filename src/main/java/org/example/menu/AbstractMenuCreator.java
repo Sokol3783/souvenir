@@ -30,7 +30,7 @@ public abstract class AbstractMenuCreator {
         Enter value number: 
         """);
     while (IN.hasNextLine()) {
-      if (IN.hasNextInt())
+      if (IN.hasNextInt()) {
         switch (IN.nextInt()) {
           case 1 -> {
             return findFabricatorByName();
@@ -40,6 +40,7 @@ public abstract class AbstractMenuCreator {
           }
           default -> System.out.println("Invalid input, enter '1' or '2'");
         }
+      }
     }
     return null;
   }
@@ -77,7 +78,7 @@ public abstract class AbstractMenuCreator {
 
     @Override
     public Menu getMenu() {
-      SortedMenu<Item> items = new SortedMenu<>();
+      SortedMenu<Item> items = new SortedMenu<>(Menu.SortedMenu.defaultComparator());
       //Додавати, редагувати, переглядати всіх виробників
       items.add(fabricatorMenu());
       //Додавати, редагувати, переглядати всіх сувеніри.
@@ -100,7 +101,7 @@ public abstract class AbstractMenuCreator {
     }
 
     private Item removeFabricatorAndFabricatorsSouvenir() {
-      return new Item(9, "Remove fabricator and fabricators from menu", () -> {
+      return new Item(9, "Remove fabricator and fabricator's souvenirs from menu", () -> {
         Fabricator remove = chooseFabricator();
         souvenirDAO.getAll().stream().filter(s -> s.getOwner().equals(remove))
             .forEach(souvenirDAO::delete);
@@ -152,10 +153,14 @@ public abstract class AbstractMenuCreator {
     }
 
     private Item listSouvenirsFromCountry() {
-      String country = Util.enterStringValue("country");
-      return new Item(4, "List souvenirs from country", () -> souvenirDAO.getAll().stream()
-          .filter(s -> s.getOwner().getCountry().compareToIgnoreCase(country) == 0).forEach(
-              System.out::println));
+
+      return new Item(4, "List souvenirs from country", () ->
+      {
+        String country = Util.enterStringValue("country");
+        souvenirDAO.getAll().stream()
+            .filter(s -> s.getOwner().getCountry().compareToIgnoreCase(country) == 0).forEach(
+                System.out::println);
+      });
     }
 
     private Item listFabricatorsSouvenirsByInput() {
@@ -167,14 +172,14 @@ public abstract class AbstractMenuCreator {
     }
 
     private Item souvenirMenu() {
-      return new Item(2, "souvenir menu", () -> {
+      return new Item(2, "Souvenir menu", () -> {
         Menu menu = new SouvenirMenuCreator().getMenu();
         menu.runMenu();
       });
     }
 
     private Item fabricatorMenu() {
-      return new Item(1, "fabricator menu", () -> {
+      return new Item(1, "Fabricator menu", () -> {
         Menu menu = new FabricatorMenuCreator().getMenu();
         menu.runMenu();
       });
@@ -186,7 +191,7 @@ public abstract class AbstractMenuCreator {
 
     @Override
     public Menu getMenu() {
-      SortedMenu<Item> items = new SortedMenu<>();
+      SortedMenu<Item> items = new SortedMenu<>(Menu.SortedMenu.defaultComparator());
       items.add(new Item(1, "add", souvenirDAO::create));
       items.add(new Item(2, "change", () ->
           souvenirDAO.update(chooseSouvenir())));
@@ -200,7 +205,7 @@ public abstract class AbstractMenuCreator {
 
     @Override
     public Menu getMenu() {
-      SortedMenu<Item> items = new SortedMenu<>();
+      SortedMenu<Item> items = new SortedMenu<>(Menu.SortedMenu.defaultComparator());
       items.add(new Item(1, "add", fabricatorDAO::create));
       items.add(new Item(2, "change", () ->
           fabricatorDAO.update(chooseFabricator())));

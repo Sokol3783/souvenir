@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -57,11 +58,6 @@ public class Menu {
       this.list = new ArrayList<>();
     }
 
-    public SortedMenu() {
-      this.comparator = (Comparator<T>) defaultComparator();
-      this.list = new ArrayList<>();
-    }
-
     public static Comparator<Item> defaultComparator(){
       return Comparator.comparing(Item::getNumber);
     }
@@ -92,7 +88,7 @@ public class Menu {
         int i = n[0];
         s.setNumber(i++);
         n[0] = i;
-      }).toList();
+      }).collect(Collectors.toList());
 
     }
 
@@ -126,7 +122,7 @@ public class Menu {
     }
 
     public String toString() {
-      return String.format("%3d %30s", number, nameItem);
+      return String.format("%3d %s", number, nameItem);
     }
 
     @Override
