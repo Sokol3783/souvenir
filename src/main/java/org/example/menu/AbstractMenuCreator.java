@@ -88,7 +88,7 @@ public abstract class AbstractMenuCreator {
     private Item souvenirMenu() {
       return new Item(2, "Souvenir menu", () -> {
         Menu menu = new ModelMenuCreator(SouvenirDAO.getInstance(),
-            new SouvenirChooser()).getMenu();
+            new SouvenirChooser(SouvenirDAO.getInstance())).getMenu();
         menu.runMenu();
       });
     }
@@ -96,7 +96,7 @@ public abstract class AbstractMenuCreator {
     private Item fabricatorMenu() {
       return new Item(1, "Fabricator menu", () -> {
         Menu menu = new ModelMenuCreator(FabricatorDAO.getInstance(),
-            new FabricatorChooser()).getMenu();
+            new FabricatorChooser(FabricatorDAO.getInstance())).getMenu();
         menu.runMenu();
       });
     }

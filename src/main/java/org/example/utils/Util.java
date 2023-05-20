@@ -120,11 +120,6 @@ public class Util {
   }
 
   //TODO
-  public static Fabricator chooseFabricator() {
-    throw  new UnsupportedOperationException();
-  }
-
-  //TODO
   public static Souvenir chooseSouvenir() {
     return null;
   }

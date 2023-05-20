@@ -4,7 +4,6 @@ import static org.example.App.IN;
 
 import java.util.Optional;
 import org.example.dao.DAO;
-import org.example.dao.FabricatorDAO;
 import org.example.models.Fabricator;
 import org.example.models.Souvenir;
 
@@ -14,7 +13,11 @@ public interface Chooser<T> {
 
   public static class FabricatorChooser<T extends Fabricator> implements Chooser {
 
-    private final DAO<Fabricator> dao = FabricatorDAO.getInstance();
+    private final DAO<Fabricator> dao;
+
+    public FabricatorChooser(DAO<Fabricator> dao) {
+      this.dao = dao;
+    }
 
     @Override
     public Fabricator choose() {
@@ -22,12 +25,8 @@ public interface Chooser<T> {
       while (IN.hasNextLine()) {
         if (IN.hasNextInt()) {
           switch (IN.nextInt()) {
-            case 1 -> {
-              return findFabricatorByName();
-            }
-            case 2 -> {
-              return findFabricatorById();
-            }
+            case 1 -> { return findFabricatorByName(); }
+            case 2 -> { return findFabricatorById(); }
             default -> System.out.println("Invalid input, enter '1' or '2'");
           }
         }
@@ -63,6 +62,9 @@ public interface Chooser<T> {
   }
 
   public static class SouvenirChooser<T extends Souvenir> implements Chooser {
+
+    public SouvenirChooser(DAO<Souvenir> souvenirDAO) {
+    }
 
     @Override
     public T choose() {

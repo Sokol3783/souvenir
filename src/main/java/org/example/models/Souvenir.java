@@ -20,7 +20,7 @@ public class Souvenir extends DefaultFields {
 
     @Override
     public String toString(){
-       return  String.format("%5s %-25.25s %-15.15s %25s %15s %-f",
+       return  String.format("%3s %-45s %-16s %-10s %-13s %5.2f",
         id, name, brand, owner.getName(), dateIssue, price);
 
     }
