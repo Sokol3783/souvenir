@@ -1,4 +1,4 @@
-package org.example;
+package org.example.utils;
 
 import static org.example.App.IN;
 
@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import org.example.App;
 import org.example.dao.DAO;
 import org.example.dao.FabricatorDAO;
 import org.example.dao.SouvenirDAO;
@@ -67,20 +69,20 @@ public class Util {
 
   private static void restoreSouvenirs() throws FileNotFoundException {
     Gson gson = new Gson();
-    List<Souvenir> coll = gson.fromJson(new FileReader(
-        App.path + Souvenir.class.getCanonicalName()
-    ), new TypeToken<List<Souvenir>>() {
-    }.getType());
+    List<Souvenir> coll = gson.fromJson(
+        new FileReader(App.path + Souvenir.class.getCanonicalName()),
+        new TypeToken<List<Souvenir>>() {
+        }.getType());
     DAO<Souvenir> dao = SouvenirDAO.getInstance();
     coll.forEach(dao::update);
   }
 
   private static void restoreFabricator() throws FileNotFoundException {
     Gson gson = new Gson();
-    List<Fabricator> coll = gson.fromJson(new FileReader(
-        App.path + Fabricator.class.getCanonicalName()
-    ), new TypeToken<List<Fabricator>>() {
-    }.getType());
+    List<Fabricator> coll = gson.fromJson(
+        new FileReader(App.path + Fabricator.class.getCanonicalName()),
+        new TypeToken<List<Fabricator>>() {
+        }.getType());
     DAO<Fabricator> dao = FabricatorDAO.getInstance();
     coll.forEach(dao::update);
   }
@@ -116,4 +118,56 @@ public class Util {
       writer.write(serialized);
     }
   }
+
+  //TODO
+  public static Fabricator chooseFabricator() {
+    System.out.println("""
+        1. Find by name.
+        2. Find by id.
+        Enter value number: 
+        """);
+    while (IN.hasNextLine()) {
+      if (IN.hasNextInt()) {
+        switch (IN.nextInt()) {
+          case 1 -> {
+            return findFabricatorByName();
+          }
+          case 2 -> {
+            return findFabricatorById();
+          }
+          default -> System.out.println("Invalid input, enter '1' or '2'");
+        }
+      }
+    }
+    return null;
+  }
+
+  public static Fabricator findFabricatorById() {
+    Optional<Fabricator> first = Optional.empty();
+    while (first.isEmpty()) {
+      //TODO
+      //first = fabricatorDAO.get(Util.enterIntValue("id"));
+    }
+    return first.get();
+  }
+
+  private static Fabricator findFabricatorByName() {
+    Optional<Fabricator> first = Optional.empty();
+    while (first.isEmpty()) {
+      String name = Util.enterStringValue("fabricator's name");
+      /*TODO
+      first = fabricatorDAO.getAll().stream()
+          .filter(s -> s.getName().compareToIgnoreCase(name) == 0).findFirst();
+
+       */
+    }
+    return first.get();
+  }
+
+  //TODO
+  public static Souvenir chooseSouvenir() {
+    return null;
+  }
+
+
 }
