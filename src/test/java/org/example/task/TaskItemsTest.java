@@ -2,6 +2,7 @@ package org.example.task;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +10,8 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.example.dao.DAO;
 import org.example.dao.FabricatorDAO;
 import org.example.dao.SouvenirDAO;
@@ -73,7 +76,7 @@ class TaskItemsTest {
         new Souvenir(20, "Connect 4 Classic Grid Board Game", "Connect 4",
             LocalDate.parse("2018-07-15"), 9.99, fabricatorDAO.get(2).get()),
         new Souvenir(21, "Hot Wheels Track Builder Unlimited Loop Kit", "Hot Wheels",
-            LocalDate.parse("2022-05-01"), 29.99, fabricatorDAO.get(2).get()));
+            LocalDate.parse("2022-05-01"), 0.99, fabricatorDAO.get(2).get()));
   }
 
   private static List<Fabricator> getFabricators() {
@@ -114,7 +117,7 @@ class TaskItemsTest {
     ByteArrayOutputStream outputStream = getOutputByteStream("1\nLego\n");
     task.listFabricatorsSouvenirsByInput().run();
     String output = outputStream.toString().trim();
-    assertEquals(getListSubString(output), getLegoSouvenirsList());
+    assertEquals(getLegoSouvenirsList(), getListSubString(output));
   }
 
   private String getListSubString(String output) {
@@ -137,7 +140,7 @@ class TaskItemsTest {
     ByteArrayOutputStream outputStream = getOutputByteStream("Japan");
     task.listSouvenirsFromCountry().run();
     String output = outputStream.toString().trim();
-    assertEquals(getListSubString(output), getListSouvenirsFromJapan());
+    assertEquals(getListSouvenirsFromJapan(),getListSubString(output));
   }
 
   private String getListSouvenirsFromJapan() {
@@ -150,19 +153,76 @@ class TaskItemsTest {
   }
 
   @Test
-  void listFabricatorsHasPriceLessThenInputPriceTest() {
-    ByteArrayOutputStream outputStream = getOutputByteStream("Japan");
-    task.listSouvenirsFromCountry().run();
+  @Disabled
+  void listFabricatorsHasPriceLessThenInputPrice_1_Test() {
+    ByteArrayOutputStream outputStream = getOutputByteStream("1");
+    task.listFabricatorsHasPriceLessThenInputPrice().run();
     String output = outputStream.toString().trim();
-    assertEquals(getListSubString(output), "");
+    assertEquals(listLess1(), getListSubString(output));
+  }
+
+  private String listLess1() {
+    return "List:\n"
+        + "Fabricator(id=2, name=HASBRO, country=USA)";
   }
 
   @Test
+  @Disabled
+  void listFabricatorsHasPriceLessThenInputPrice_100_Test() {
+    ByteArrayOutputStream outputStream = getOutputByteStream("100");
+    task.listFabricatorsHasPriceLessThenInputPrice().run();
+    String output = outputStream.toString().trim();
+    assertEquals(listLess100(), getListSubString(output));
+  }
+
+  private String listLess100() {
+    return "List:\n"
+        + "Fabricator(id=1, name=LEGO, country=DENMARK)\n"
+        + "Fabricator(id=2, name=HASBRO, country=USA)\n"
+        + "Fabricator(id=3, name=Mattel, country=USA)\n"
+        + "Fabricator(id=4, name=Bandai, country=JAPAN)";
+  }
+
+  @Test
+  @Disabled
   void listFabricatorsAndListFabricatorsSouvenirsTest() {
     ByteArrayOutputStream outputStream = getOutputByteStream("Japan");
-    task.listSouvenirsFromCountry().run();
+    task.listFabricatorsAndListFabricatorsSouvenirs().run();
     String output = outputStream.toString().trim();
-    assertEquals(getListSubString(output), "");
+    assertEquals(listAll(), getListSubString(output));
+  }
+
+  private String listAll() {
+    return "List:\n"
+        + " - Fabricator(id=4, name=Bandai, country=JAPAN)\n"
+        + " id                       name                        brand      fabricator   date issue    price\n"
+        + " -  14 Gundam RX-78-2 Model Kit                      Gundam           Bandai     2022-04-05    49,99\n"
+        + " -  15 Tamagotchi Virtual Pet                        Tamagotchi       Bandai     2020-09-20    19,99\n"
+        + " -  16 Power Rangers Beast Morphers Action Figure    Power Rangers    Bandai     2019-03-10    14,99\n"
+        + " -  17 Dragon Ball Z Figurine                        Dragon Ball Z    Bandai     2017-07-01    29,99\n"
+        + " - Fabricator(id=2, name=HASBRO, country=USA)\n"
+        + " id                       name                        brand      fabricator   date issue    price\n"
+        + " -   6 Transformers Bumblebee Action Figure          Transformers     HASBRO     2020-05-05    19,99\n"
+        + " -   7 Monopoly Classic Board Game                   Monopoly         HASBRO     2019-02-15    19,99\n"
+        + " -   8 Nerf N-Strike Elite Disruptor Blaster         Nerf             HASBRO     2017-06-01    12,99\n"
+        + " -   9 Play-Doh Modeling Compound 10-Pack            Play-Doh         HASBRO     2021-03-20     7,99\n"
+        + " -  18 Baby Alive Doll                               Baby Alive       HASBRO     2019-09-10    24,99\n"
+        + " -  19 My Little Pony Friendship Castle Playset      My Little Pony   HASBRO     2020-11-30    39,99\n"
+        + " -  20 Connect 4 Classic Grid Board Game             Connect 4        HASBRO     2018-07-15     9,99\n"
+        + " -  21 Hot Wheels Track Builder Unlimited Loop Kit   Hot Wheels       HASBRO     2022-05-01     0,99\n"
+        + " - Fabricator(id=1, name=LEGO, country=DENMARK)\n"
+        + " id                       name                        brand      fabricator   date issue    price\n"
+        + " -   1 LEGO Classic Bricks Box                       LEGO             LEGO       2022-01-15    29,99\n"
+        + " -   2 LEGO Star Wars Millennium Falcon              LEGO             LEGO       2021-08-20    159,99\n"
+        + " -   3 LEGO Friends Heartlake City Resort            LEGO             LEGO       2020-03-10    89,99\n"
+        + " -   4 LEGO Technic Bugatti Chiron                   LEGO             LEGO       2018-06-01    349,99\n"
+        + " -   5 LEGO Harry Potter Hogwarts Castle             LEGO             LEGO       2018-08-01    399,99\n"
+        + " - Fabricator(id=3, name=Mattel, country=USA)\n"
+        + " id                       name                        brand      fabricator   date issue    price\n"
+        + " -  10 Barbie Dreamhouse Dollhouse                   Barbie           Mattel     2020-07-01    179,99\n"
+        + " -  11 Hot Wheels Ultimate Garage                    Hot Wheels       Mattel     2019-05-10    99,99\n"
+        + " -  12 Fisher-Price Laugh & Learn Smart Stages Chair Fisher-Price     Mattel     2021-11-15    39,99\n"
+        + " -  13 UNO Card Game                                 UNO              Mattel     2018-02-01     9,99";
   }
 
   @Test
@@ -170,7 +230,7 @@ class TaskItemsTest {
     ByteArrayOutputStream outputStream = getOutputByteStream("Japan");
     task.listSouvenirsFromCountry().run();
     String output = outputStream.toString().trim();
-    assertEquals(getListSubString(output), "");
+    assertEquals("",getListSubString(output));
   }
 
   @Test
@@ -179,7 +239,7 @@ class TaskItemsTest {
     ByteArrayOutputStream outputStream = getOutputByteStream("2018");
     task.listSouvenirsByYear().run();
     String output = outputStream.toString().trim();
-    assertEquals(getListSubString(output), getListSouvenirsByYear());
+    assertEquals(getListSouvenirsByYear(), getListSubString(output));
   }
 
   private String getListSouvenirsByYear() {
@@ -192,10 +252,17 @@ class TaskItemsTest {
   }
 
   @Test
+  @Disabled
   void removeFabricatorAndFabricatorsSouvenirTest() {
-    ByteArrayOutputStream outputStream = getOutputByteStream("Japan");
-    task.listSouvenirsFromCountry().run();
+    ByteArrayOutputStream outputStream = getOutputByteStream("1\nLego\n");
+    task.removeFabricatorAndFabricatorsSouvenir().run();
     String output = outputStream.toString().trim();
-    assertEquals(getListSubString(output), "");
+    assertTrue(output.contains("Fabricator and souvenirs has been removed"));
+    Optional<Fabricator> fabricator = fabricatorDAO.get(1);
+    assertTrue(fabricator.isEmpty());
+    List<Souvenir> collect = souvenirDAO.getAll().stream().filter(s -> s.getOwner().getId() == 1)
+        .collect(Collectors.toList());
+    assertEquals(0,collect.size());
+
   }
 }

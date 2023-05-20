@@ -45,6 +45,10 @@ public class TaskItemImpl implements TaskItems {
 
   private void printSouvenirHeader() {
     System.out.println("List:");
+    printSouvenirTableHeader();
+  }
+
+  private void printSouvenirTableHeader() {
     System.out.printf("%3s %-21s %-20s %12s %-3s %s %-12s %10s %8s\n",
         "id","", "name","brand", "", "","fabricator","date issue","price");
   }
@@ -83,13 +87,15 @@ public class TaskItemImpl implements TaskItems {
     return new Runnable() {
       @Override
       public void run() {
+        System.out.println("List:");
         Map<Fabricator, List<Souvenir>> collect = souvenirDAO.getAll().stream()
             .collect(Collectors.groupingBy(Souvenir::getOwner));
         collect.entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().getName()))
             .forEach(e -> {
               System.out.println(" - " + e.getKey());
+              printSouvenirTableHeader();
               e.getValue().stream()
-                  .sorted(Comparator.comparing(Souvenir::getBrand).thenComparing(Souvenir::getName))
+                  .sorted(Comparator.comparing(Souvenir::getId))
                   .forEach(s -> System.out.println(" - " + s));
             });
       }
