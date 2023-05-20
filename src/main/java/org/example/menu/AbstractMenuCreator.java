@@ -1,15 +1,14 @@
 package org.example.menu;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.example.dao.DAO;
+import org.example.dao.FabricatorDAO;
+import org.example.dao.SouvenirDAO;
 import org.example.menu.Menu.Item;
 import org.example.menu.Menu.SortedMenu;
-import org.example.models.Fabricator;
-import org.example.models.Souvenir;
 import org.example.task.TaskItems;
+import org.example.utils.Chooser;
+import org.example.utils.Chooser.FabricatorChooser;
+import org.example.utils.Chooser.SouvenirChooser;
 
 
 public abstract class AbstractMenuCreator {
@@ -78,8 +77,7 @@ public abstract class AbstractMenuCreator {
 
     private Item listSouvenirsFromCountry() {
 
-      return new Item(4, "List souvenirs from country", () ->
-          taskItem.listSouvenirsFromCountry());
+      return new Item(4, "List souvenirs from country", () -> taskItem.listSouvenirsFromCountry());
     }
 
     private Item listFabricatorsSouvenirsByInput() {
@@ -89,49 +87,38 @@ public abstract class AbstractMenuCreator {
 
     private Item souvenirMenu() {
       return new Item(2, "Souvenir menu", () -> {
-        Menu menu = new SouvenirMenuCreator().getMenu();
+        Menu menu = new ModelMenuCreator(SouvenirDAO.getInstance(),
+            new SouvenirChooser()).getMenu();
         menu.runMenu();
       });
     }
 
     private Item fabricatorMenu() {
       return new Item(1, "Fabricator menu", () -> {
-        Menu menu = new FabricatorMenuCreator().getMenu();
+        Menu menu = new ModelMenuCreator(FabricatorDAO.getInstance(),
+            new FabricatorChooser()).getMenu();
         menu.runMenu();
       });
     }
 
   }
 
-  public static class SouvenirMenuCreator<T> extends AbstractMenuCreator {
+  public static class ModelMenuCreator<T> extends AbstractMenuCreator {
 
     private final DAO<T> dao;
+    private final Chooser<T> chooser;
 
-    public SouvenirMenuCreator<T>(DAO<T> dao){
+    public ModelMenuCreator(DAO<T> dao, Chooser<T> chooser) {
       this.dao = dao;
+      this.chooser = chooser;
     }
+
     @Override
     public Menu getMenu() {
       SortedMenu<Item> items = new SortedMenu<>(Menu.SortedMenu.defaultComparator());
       items.add(new Item(1, "add", dao::create));
-      items.add(new Item(2, "change", () ->
-          dao.update(chooseSouvenir())));
-      items.add(new Item(3, "list all", () ->
-          dao.getAll().forEach(System.out::println)));
-      return new Menu(items);
-    }
-  }
-
-  public static class FabricatorMenuCreator extends AbstractMenuCreator {
-
-    @Override
-    public Menu getMenu() {
-      SortedMenu<Item> items = new SortedMenu<>(Menu.SortedMenu.defaultComparator());
-      items.add(new Item(1, "add", fabricatorDAO::create));
-      items.add(new Item(2, "change", () ->
-          fabricatorDAO.update(chooseFabricator())));
-      items.add(new Item(3, "list all", () ->
-          fabricatorDAO.getAll().forEach(System.out::println)));
+      items.add(new Item(2, "change", () -> dao.update(chooser.choose())));
+      items.add(new Item(3, "list all", () -> dao.getAll().forEach(System.out::println)));
       return new Menu(items);
     }
   }
